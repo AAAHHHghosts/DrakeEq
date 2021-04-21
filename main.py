@@ -2,7 +2,7 @@
 # Simulation of a galaxy to generate a value for the contact rate between civilizations
 
 # import dependencies
-import sys
+import sys, pygame
 import time
 from constants import *
 from civ import Civ

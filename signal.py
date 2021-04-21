@@ -1,7 +1,7 @@
 # import dependencies
 
 from constants import DIAM
-
+import pygame
 
 # create signal object
 class Signal:

@@ -2,6 +2,7 @@
 import math
 from random import randrange
 from constants import *
+import pygame
 
 
 # create civilization object
