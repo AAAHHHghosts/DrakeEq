@@ -1,5 +1,5 @@
 # import dependencies
-import math, pygame
+import math
 from random import randrange
 from constants import *
 
@@ -32,7 +32,8 @@ class Civ:
     def advanceAge(self):
         self.age = self.age + 1
 
-    def isContacted
+    def isContacted(self):
+        return True
 
     # draw the civilization
     def draw(self, surface):

@@ -1,5 +1,5 @@
 # import dependencies
-import pygame
+
 from constants import DIAM
 
 
