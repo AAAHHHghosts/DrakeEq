@@ -1,6 +1,8 @@
 # authot: sccub and ssamypoull
 # Simulation of a galaxy to generate a value for the contact rate between civilizations
 
+# poooooooo
+
 # import dependencies
 import sys, pygame
 import time
