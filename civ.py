@@ -23,7 +23,7 @@ class Civ:
         self.color = (255, 0, 0)  # (111,209,164)
         self.lifespan = randrange(2, 6)
         self.age = 0
-        self.ID = id
+        self.ID = int(id)
         self.coms = []
 
 
