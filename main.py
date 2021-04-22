@@ -32,6 +32,10 @@ clock = 0
 # number of centuries in between each new civ birth
 civ_birthrate = 100
 
+# ticker of how many communications have occurred
+num_coms = 0
+
+
 # begin game loop
 while 1:
     for event in pygame.event.get():
@@ -65,7 +69,8 @@ while 1:
 
         for sig in signals:
             if civ.isContacted(sig):
-                print("com!")
+                num_coms += 1
+                print("com! #" + str(num_coms))
 
     # redraw all signals
     for sig in signals:
@@ -80,3 +85,14 @@ while 1:
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
     clock += 1
+
+# def inHalo(civ1,civ2):
+#	OuterRadius = TIME - civ1.Birthdate
+#	InnerRadius = OuterRadius - Lifetime
+#	D = distance(civ1,civ2)
+#	if InnerRadius < D < OuterRadius:
+#		return True
+#	else
+#		return False
+# def distance(civ1,civ2):
+#	return sqrt((civ1x-civ2x)**2 - (civ1y-civ2y)**2)
