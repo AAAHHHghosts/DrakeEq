@@ -2,7 +2,8 @@
 # Simulation of a galaxy to generate a value for the contact rate between civilizations
 
 # import dependencies
-import sys, pygame
+import sys
+import pygame
 import time
 from constants import *
 from civ import Civ
@@ -44,12 +45,12 @@ while 1:
         civilizations.add(newCiv)
         signals.add(newSig)
 
-    # refresh screen brackground
+    # refresh screen background
     screen.fill(black)
     pygame.draw.circle(screen, (255, 255, 255), center, RAD)
     pygame.draw.circle(screen, (155, 155, 155), center, RAD, 5)
     # galactic center
-    pygame.draw.circle(screen, (0, 0, 0), center, 13)
+    pygame.draw.circle(screen, (0, 0, 0), center, CENTER_RAD)
 
     # For all civs, redraw civ is still alive.
     # Remove civ if deceased
@@ -73,7 +74,7 @@ while 1:
 
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
-    clock = clock + 1
+    clock += 1
 
 # def inHalo(civ1,civ2):
 #	OuterRadius = TIME - civ1.Birthdate

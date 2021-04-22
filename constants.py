@@ -5,7 +5,7 @@ CENTER_RAD = 13
 
 
 # time & clock constants
-SIM_SPEED = 5.0
+SIM_SPEED = 100.0
 
 
 # The Drake Equation
