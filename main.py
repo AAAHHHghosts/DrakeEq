@@ -80,14 +80,3 @@ while 1:
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
     clock += 1
-
-# def inHalo(civ1,civ2):
-#	OuterRadius = TIME - civ1.Birthdate
-#	InnerRadius = OuterRadius - Lifetime
-#	D = distance(civ1,civ2)
-#	if InnerRadius < D < OuterRadius:
-#		return True
-#	else
-#		return False
-# def distance(civ1,civ2):
-#	return sqrt((civ1x-civ2x)**2 - (civ1y-civ2y)**2)
