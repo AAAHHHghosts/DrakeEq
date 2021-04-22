@@ -19,8 +19,9 @@ black = 0, 0, 0
 
 # declare a set for all civilizations
 # and a set for all of their signals
-civilizations = {Civ() for x in range(int(N_low))}
-signals = {Signal(civ) for civ in civilizations}
+init_civ_count = N_high
+civilizations = [Civ(i) for i in range(int(init_civ_count))]
+signals = [Signal(civ) for civ in civilizations]
 
 # set up game clock and simulation speed
 starttime = time.time()
@@ -40,10 +41,10 @@ while 1:
     # represents civ_birthrate. Create that
     # civ's signal as well.
     if clock % civ_birthrate == 0:
-        newCiv = Civ()
+        newCiv = Civ(init_civ_count + clock + 1)
         newSig = Signal(newCiv)
-        civilizations.add(newCiv)
-        signals.add(newSig)
+        civilizations.append(newCiv)
+        signals.append(newSig)
 
     # refresh screen background
     screen.fill(black)
@@ -61,6 +62,10 @@ while 1:
             civ.draw(screen)
         else:
             civilizations.remove(civ)
+
+        for sig in signals:
+            if civ.isContacted(sig):
+                print("com!")
 
     # redraw all signals
     for sig in signals:

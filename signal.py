@@ -14,6 +14,7 @@ class Signal:
         self.color = (209, 111, 156)
         self.lifespan = civ.lifespan
         self.age = 0
+        self.ID = civ.ID
 
     # check if civilizations is still living
     def isEmitting(self):
