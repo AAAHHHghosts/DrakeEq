@@ -1,8 +1,9 @@
 # import dependencies
+import pygame
+import numpy as np
 import math
 from random import randrange
 from constants import *
-import pygame
 
 
 # create civilization object
@@ -14,14 +15,14 @@ class Civ:
         # within galaxy circle and outside galactic
         # center
         inGalaxy = False
-        while (not inGalaxy):
+        while not inGalaxy:
             self.x, self.y = randrange(DIAM), randrange(DIAM)
             hyp = math.sqrt((self.x - RAD) ** 2 + (self.y - RAD) ** 2)
             inGalaxy = hyp < RAD and hyp > CENTER_RAD
 
         self.rad = 5
         self.color = (255, 0, 0)  # (111,209,164)
-        self.lifespan = randrange(2, 6)
+        self.lifespan = np.random.normal(civ_lifespan)
         self.age = 0
         self.ID = int(id)
         self.coms = []
@@ -33,7 +34,7 @@ class Civ:
 
     # update the civilization's age
     def advanceAge(self):
-        self.age = self.age + 1
+        self.age += 1
 
     def isContacted(self, sig):
 
@@ -52,8 +53,8 @@ class Civ:
         else:
             return False
 
-
-        return True
+    def hasComs(self):
+        return len(self.coms) > 0
 
     # draw the civilization
     def draw(self, surface):

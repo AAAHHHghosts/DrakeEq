@@ -5,6 +5,7 @@
 import sys
 import pygame
 import time
+import numpy as np
 from constants import *
 from civ import Civ
 from signal import Signal
@@ -19,8 +20,8 @@ black = 0, 0, 0
 
 # declare a set for all civilizations
 # and a set for all of their signals
-init_civ_count = N_high
-civilizations = [Civ(i) for i in range(int(init_civ_count))]
+init_civ_count = np.random.poisson(avg_civ_count)
+civilizations = [Civ(i) for i in range(init_civ_count)]
 signals = [Signal(civ) for civ in civilizations]
 
 # set up game clock and simulation speed
@@ -29,26 +30,30 @@ century_length = 1.0 / SIM_SPEED
 # variable to hold the century count
 clock = 0
 
-# number of centuries in between each new civ birth
-civ_birthrate = 100
-
+print ("avg birthrate " + str(avg_num_births))
 # ticker of how many communications have occurred
 num_coms = 0
-
+# ticker of number of civs that have been born
+num_civs = init_civ_count
 
 # begin game loop
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
 
-    # create 1 new civ every n centuries, where n
-    # represents civ_birthrate. Create that
-    # civ's signal as well.
-    if clock % civ_birthrate == 0:
-        newCiv = Civ(init_civ_count + clock + 1)
-        newSig = Signal(newCiv)
+    print("century #" + str(clock) + ". Number of civs: " + str(len(civilizations)))
+    print("total coms: " + str(num_coms))
+
+    # get the number of births this century
+    num_births = np.random.poisson(avg_num_births)
+    for i in range(num_births):
+        num_civs += 1
+        newCiv = Civ(num_civs)
         civilizations.append(newCiv)
-        signals.append(newSig)
+
+        if newCiv.isAlive():
+            newSig = Signal(newCiv)
+            signals.append(newSig)
 
     # refresh screen background
     screen.fill(black)
@@ -70,7 +75,6 @@ while 1:
         for sig in signals:
             if civ.isContacted(sig):
                 num_coms += 1
-                print("com! #" + str(num_coms))
 
     # redraw all signals
     for sig in signals:
@@ -80,19 +84,6 @@ while 1:
     # update newly refreshed screen
     pygame.display.flip()
 
-    print("century " + str(clock) + ". there are " + str(len(civilizations)) + " civs.")
-
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
     clock += 1
-
-# def inHalo(civ1,civ2):
-#	OuterRadius = TIME - civ1.Birthdate
-#	InnerRadius = OuterRadius - Lifetime
-#	D = distance(civ1,civ2)
-#	if InnerRadius < D < OuterRadius:
-#		return True
-#	else
-#		return False
-# def distance(civ1,civ2):
-#	return sqrt((civ1x-civ2x)**2 - (civ1y-civ2y)**2)

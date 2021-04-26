@@ -16,7 +16,14 @@ class Signal:
         self.age = 0
         self.ID = civ.ID
 
-    # check if civilizations is still living
+    # Check if civilizations is still living
+    # Notice that if age and lifespan happens to be zero,
+    # (less than a century), this method still returns true,
+    # If this method instead returned false, the signal's width
+    # will never increment and remain zero. If this happens,
+    # pygame interprets circles of width zero as solid circles.
+    # A solid circle, in this model, represents a immortal
+    # civilization. We
     def isEmitting(self):
         return self.age < self.lifespan
 
@@ -25,8 +32,8 @@ class Signal:
 
     # update the civilization's age
     def advanceAge(self):
-        self.age = self.age + 1
-        self.rad = self.rad + 1
+        self.age += 1
+        self.rad += 1
 
         if (self.isEmitting()):
             self.width = self.width + 1

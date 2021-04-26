@@ -8,6 +8,9 @@ CENTER_RAD = 13
 SIM_SPEED = 100.0
 
 
+# toggle high and low estimates
+IS_HIGH = True
+
 # The Drake Equation
 def drake_eq(R, fp, ne, fl, fi, fc, L):
     return R * fp * ne * fl * fi * fc * L
@@ -48,8 +51,8 @@ fc_high = 0.1
 
 # the number of centuries that such
 # communicative civilizations are active
-L_low = 16
-L_high = 100
+L_low = 4
+L_high = 10
 
 # low and high estimate for N, the number of
 # currently active, communicative civilizations
@@ -58,9 +61,23 @@ N_low = drake_eq(R_low, fp_low, ne_low, fl_low, fi_low, fc_low, L_low)
 N_high = drake_eq(R_high, fp_high, ne_high, fl_high, fi_high, fc_high, L_high)
 
 
-# calculate birth rate for civs
+# Calculate death rate for civs.
+# Because we are assuming a steady
+# population, the death rate is equal
+# to the birth rate
 civ_br_low = N_low/L_low
 civ_br_high = N_high/L_high
+
+
+# set global values based on high or low estimate
+if IS_HIGH:
+    avg_civ_count = N_high
+    avg_num_births = civ_br_high
+    civ_lifespan = L_high
+else:
+    avg_civ_count = N_low
+    avg_num_births = civ_br_low
+    civ_lifespan = L_low
 
 print(N_low, civ_br_low)
 print(N_high, civ_br_high)
