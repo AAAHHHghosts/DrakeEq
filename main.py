@@ -32,14 +32,23 @@ signals = [Signal(civ) for civ in civilizations]
 # set up game clock and simulation speed
 starttime = time.time()
 century_length = 1.0 / SIM_SPEED
+
 # variable to hold the century count
 clock = 0
 
 # ticker of how many communications have occurred
 num_cons = 0
+
+# ticker of how many civilizations have had at
+# least one contact
 num_con_civs = 0
+
+# log to record all contacts that have occurred.
 con_log = []
-# ticker of number of civs that have been born
+# only keep this many of the latest contacts at a time
+entries_to_keep = 10
+
+# ticker of number of civs living or dead
 num_civs = init_civ_count
 
 # begin game loop
@@ -68,9 +77,9 @@ while 1:
     # for all sigs, redraw if sig has not fully
     # left the galaxy
     for sig in signals:
+        sig.advanceAge()
 
         if sig.inGalaxy():
-            sig.advanceAge()
             sig.draw(screen)
         else:
             signals.remove(sig)
@@ -85,12 +94,23 @@ while 1:
         else:
             civilizations.remove(civ)
 
+        # check if civ is within any signals
         for sig in signals:
             if civ.isContacted(sig, con_log):
+
+                # increment number of cons
                 num_cons += 1
 
+                # if this is a civ's first con,
+                # increment the number of civs
+                # that have had cons
                 if civ.firstCon():
                     num_con_civs += 1
+
+                # if con_log is larger than desired,
+                # remove oldest entry
+                if len(con_log) > entries_to_keep:
+                    con_log.pop(0)
 
     # calculate percentage of civs
     # that have been contacted
@@ -117,10 +137,10 @@ while 1:
             ]
 
     # print most recent 10 or less cons
-    if num_cons < 10:
+    if num_cons < entries_to_keep:
         logs_to_print = num_cons
     else:
-        logs_to_print = 10
+        logs_to_print = entries_to_keep
     for i in range(logs_to_print):
         data.append(con_log[-(i + 1)])
 

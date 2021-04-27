@@ -26,7 +26,7 @@ class Civ:
 
         # define remaining civ attributes
         self.rad = 2
-        self.color = (255, 0, 0)  # (111,209,164)
+        self.color = (0, 0, 255)
         self.lifespan = np.random.normal(avg_lifespan)
         self.age = 0
         self.ID = int(id)

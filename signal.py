@@ -11,7 +11,7 @@ class Signal:
         self.x, self.y = civ.x, civ.y
         self.rad = 0
         self.width = 0
-        self.color = (209, 111, 156)
+        self.color = (0, 255, 80)
         self.lifespan = civ.lifespan
         self.age = 0
         self.ID = civ.ID
