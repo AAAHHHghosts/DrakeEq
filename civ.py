@@ -11,22 +11,26 @@ class Civ:
 
     # create and initialize member variables
     def __init__(self, id):
+
         # generate random coords until coords are
         # within galaxy circle and outside galactic
         # center
-        inGalaxy = False
-        while not inGalaxy:
+        in_galaxy = False
+        while not in_galaxy:
             self.x, self.y = randrange(DIAM), randrange(DIAM)
             hyp = math.sqrt((self.x - RAD) ** 2 + (self.y - RAD) ** 2)
-            inGalaxy = hyp < RAD and hyp > CENTER_RAD
+            in_galaxy = RAD > hyp > CENTER_RAD
 
-        self.rad = 5
+        # offset civ x coord by display buffer
+        self.x += BUFFER/2
+
+        # define remaining civ attributes
+        self.rad = 2
         self.color = (255, 0, 0)  # (111,209,164)
-        self.lifespan = np.random.normal(civ_lifespan)
+        self.lifespan = np.random.normal(avg_lifespan)
         self.age = 0
         self.ID = int(id)
-        self.coms = []
-
+        self.cons = []
 
     # check if civilizations is still living
     def isAlive(self):
@@ -36,7 +40,9 @@ class Civ:
     def advanceAge(self):
         self.age += 1
 
-    def isContacted(self, sig):
+    # function to tell if a given signal has
+    # made contact with the this civ
+    def isContacted(self, sig, con_log):
 
         # distance from civ to center of signal
         hyp = math.sqrt((self.x - sig.x) ** 2 + (self.y - sig.y) ** 2)
@@ -46,15 +52,17 @@ class Civ:
         sig_outer_rad = sig.rad
 
         # signal check
-        if hyp < sig_outer_rad and hyp > sig_inner_rad and sig.ID not in self.coms:
-            self.coms.append(sig.ID)
-            print("civ " + str(self.ID) + " has received signal " + str(sig.ID))
+        if sig_inner_rad < hyp < sig_outer_rad and sig.ID not in self.cons:
+            self.cons.append(sig.ID)
+            con_log.append("civ " + str(self.ID) + " heard civ " + str(sig.ID))
             return True
         else:
             return False
 
-    def hasComs(self):
-        return len(self.coms) > 0
+    # return true if civ has had one and
+    # only one contact
+    def firstCon(self):
+        return len(self.cons) == 1
 
     # draw the civilization
     def draw(self, surface):

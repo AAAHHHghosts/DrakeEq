@@ -13,10 +13,15 @@ from signal import Signal
 # initialize simulation window
 pygame.init()
 pygame.display.set_caption("Galaxy Sim")
-size = width, height = DIAM, DIAM
-center = RAD, RAD
+size = width, height = BUFFER + DIAM, DIAM
+center = BUFFER/2 + RAD, RAD
 screen = pygame.display.set_mode(size)
+
+# initialize information text box
+line_height = 20
+textbox = pygame.font.SysFont("Consolas", line_height)
 black = 0, 0, 0
+white = 255, 255, 255
 
 # declare a set for all civilizations
 # and a set for all of their signals
@@ -30,9 +35,10 @@ century_length = 1.0 / SIM_SPEED
 # variable to hold the century count
 clock = 0
 
-print ("avg birthrate " + str(avg_num_births))
 # ticker of how many communications have occurred
-num_coms = 0
+num_cons = 0
+num_con_civs = 0
+con_log = []
 # ticker of number of civs that have been born
 num_civs = init_civ_count
 
@@ -40,9 +46,6 @@ num_civs = init_civ_count
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-
-    print("century #" + str(clock) + ". Number of civs: " + str(len(civilizations)))
-    print("total coms: " + str(num_coms))
 
     # get the number of births this century
     num_births = np.random.poisson(avg_num_births)
@@ -57,12 +60,22 @@ while 1:
 
     # refresh screen background
     screen.fill(black)
-    pygame.draw.circle(screen, (255, 255, 255), center, RAD)
+    pygame.draw.circle(screen, white, center, RAD)
     pygame.draw.circle(screen, (155, 155, 155), center, RAD, 5)
     # galactic center
-    pygame.draw.circle(screen, (0, 0, 0), center, CENTER_RAD)
+    pygame.draw.circle(screen, black, center, CENTER_RAD)
 
-    # For all civs, redraw civ is still alive.
+    # for all sigs, redraw if sig has not fully
+    # left the galaxy
+    for sig in signals:
+
+        if sig.inGalaxy():
+            sig.advanceAge()
+            sig.draw(screen)
+        else:
+            signals.remove(sig)
+
+    # for all civs, redraw if civ still alive.
     # Remove civ if deceased
     for civ in civilizations.copy():
         civ.advanceAge()
@@ -73,17 +86,53 @@ while 1:
             civilizations.remove(civ)
 
         for sig in signals:
-            if civ.isContacted(sig):
-                num_coms += 1
+            if civ.isContacted(sig, con_log):
+                num_cons += 1
 
-    # redraw all signals
-    for sig in signals:
-        sig.advanceAge()
-        sig.draw(screen)
+                if civ.firstCon():
+                    num_con_civs += 1
 
-    # update newly refreshed screen
-    pygame.display.flip()
+    # calculate percentage of civs
+    # that have been contacted
+    if num_con_civs > 0:
+        percent_cons = 100 * num_con_civs/num_civs
+    else:
+        percent_cons = 0
+
+    # assemble each line of model data
+    data = ["Model Data:",
+            "Case: " + str(SIM_CASE),
+            "Avg civ count (DrakeEq): " + str(avg_civ_count),
+            "Avg civ birthrate: " + str(avg_num_births),
+            "Avg lifespan: " + str(avg_lifespan),
+            "Century #" + str(clock),
+            "There are " + str(len(civilizations)) + " civs",
+            "Signals in gal: " + str(len(signals)),
+            "Total contacts: " + str(num_cons),
+            "Total civs living or dead: " + str(num_civs),
+            "Contacted civs: " + str(num_con_civs),
+            "Contact rate: %" + str(percent_cons),
+            "",
+            "Latest cons:",
+            ]
+
+    # print most recent 10 or less cons
+    if num_cons < 10:
+        logs_to_print = num_cons
+    else:
+        logs_to_print = 10
+    for i in range(logs_to_print):
+        data.append(con_log[-(i + 1)])
+
+    # print each line of data to the model screen
+    textbox_height = 100
+    for line in data:
+        screen.blit(textbox.render(line, False, white, black), (10, textbox_height))
+        textbox_height += line_height
 
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
     clock += 1
+
+    # update screen
+    pygame.display.update()

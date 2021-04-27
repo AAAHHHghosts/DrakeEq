@@ -3,13 +3,17 @@ RAD = 500
 DIAM = 2 * RAD
 CENTER_RAD = 13
 
+# display constants
+BUFFER = 500
 
 # time & clock constants
 SIM_SPEED = 100.0
 
+# toggle high and low estimates.
+# 1 for optimistic case, and 0
+# for pessimistic case
+SIM_CASE = 0
 
-# toggle high and low estimates
-IS_HIGH = True
 
 # The Drake Equation
 def drake_eq(R, fp, ne, fl, fi, fc, L):
@@ -24,7 +28,7 @@ R_high = 1000
 
 # planetary fraction,
 # the percent of stars with planets
-fp_low = 0.10
+fp_low = 0.05
 fp_high = 0.20
 
 # the number of planets that can
@@ -40,14 +44,14 @@ fl_high = 1
 
 # the fraction of the above planets that
 # develop intelligent life
-fi_low = 0.05
-fi_high = 0.1
+fi_low = 0.01
+fi_high = 0.05
 
 # the fraction of the above life that
 # develops the capacity for interstellar
 # communication
-fc_low = 0.05
-fc_high = 0.1
+fc_low = 0.1
+fc_high = 0.25
 
 # the number of centuries that such
 # communicative civilizations are active
@@ -60,24 +64,19 @@ L_high = 10
 N_low = drake_eq(R_low, fp_low, ne_low, fl_low, fi_low, fc_low, L_low)
 N_high = drake_eq(R_high, fp_high, ne_high, fl_high, fi_high, fc_high, L_high)
 
-
 # Calculate death rate for civs.
 # Because we are assuming a steady
 # population, the death rate is equal
 # to the birth rate
-civ_br_low = N_low/L_low
-civ_br_high = N_high/L_high
-
+civ_br_low = N_low / L_low
+civ_br_high = N_high / L_high
 
 # set global values based on high or low estimate
-if IS_HIGH:
+if SIM_CASE == 1:
     avg_civ_count = N_high
     avg_num_births = civ_br_high
-    civ_lifespan = L_high
+    avg_lifespan = L_high
 else:
     avg_civ_count = N_low
     avg_num_births = civ_br_low
-    civ_lifespan = L_low
-
-print(N_low, civ_br_low)
-print(N_high, civ_br_high)
+    avg_lifespan = L_low
