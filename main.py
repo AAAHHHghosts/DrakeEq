@@ -73,6 +73,7 @@ while 1:
     pygame.draw.circle(screen, (155, 155, 155), center, RAD, 5)
     # galactic center
     pygame.draw.circle(screen, black, center, CENTER_RAD)
+    pygame.draw.circle(screen, (155, 155, 155), center, CENTER_RAD + 3, 3)
 
     # for all sigs, redraw if sig has not fully
     # left the galaxy
