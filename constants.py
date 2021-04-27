@@ -3,8 +3,11 @@ RAD = 500
 DIAM = 2 * RAD
 CENTER_RAD = 13
 
-# display constants
+# visuals & display constants
 BUFFER = 500
+black = 0, 0, 0
+white = 255, 255, 255
+grey = 155, 155, 155
 
 # time & clock constants
 SIM_SPEED = 100.0

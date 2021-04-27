@@ -20,8 +20,6 @@ screen = pygame.display.set_mode(size)
 # initialize information text box
 line_height = 20
 textbox = pygame.font.SysFont("Consolas", line_height)
-black = 0, 0, 0
-white = 255, 255, 255
 
 # declare a set for all civilizations
 # and a set for all of their signals
@@ -56,6 +54,15 @@ while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
 
+    # refresh background
+    screen.fill(black)
+    # refresh galaxy
+    pygame.draw.circle(screen, white, center, RAD)
+    pygame.draw.circle(screen, grey, center, RAD, 5)
+    # refresh galactic center
+    pygame.draw.circle(screen, black, center, CENTER_RAD)
+    pygame.draw.circle(screen, grey, center, CENTER_RAD + 3, 3)
+
     # get the number of births this century
     num_births = np.random.poisson(avg_num_births)
     for i in range(num_births):
@@ -66,14 +73,6 @@ while 1:
         if newCiv.isAlive():
             newSig = Signal(newCiv)
             signals.append(newSig)
-
-    # refresh screen background
-    screen.fill(black)
-    pygame.draw.circle(screen, white, center, RAD)
-    pygame.draw.circle(screen, (155, 155, 155), center, RAD, 5)
-    # galactic center
-    pygame.draw.circle(screen, black, center, CENTER_RAD)
-    pygame.draw.circle(screen, (155, 155, 155), center, CENTER_RAD + 3, 3)
 
     # for all sigs, redraw if sig has not fully
     # left the galaxy
@@ -137,7 +136,7 @@ while 1:
             "Latest cons:",
             ]
 
-    # print most recent 10 or less cons
+    # add most recent cons to model data
     if num_cons < entries_to_keep:
         logs_to_print = num_cons
     else:
@@ -145,7 +144,7 @@ while 1:
     for i in range(logs_to_print):
         data.append(con_log[-(i + 1)])
 
-    # print each line of data to the model screen
+    # print each line of model data to the screen
     textbox_height = 100
     for line in data:
         screen.blit(textbox.render(line, False, white, black), (10, textbox_height))
