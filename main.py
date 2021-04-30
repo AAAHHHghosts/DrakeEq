@@ -2,9 +2,7 @@
 # Simulation of a galaxy to generate a value for the contact rate between civilizations
 
 # import dependencies
-import sys
-import pygame
-import time
+import sys, pygame, time
 import numpy as np
 from constants import *
 from civ import Civ
@@ -14,8 +12,9 @@ from signal import Signal
 pygame.init()
 pygame.display.set_caption("Galaxy Sim")
 size = width, height = BUFFER + DIAM, DIAM
-center = BUFFER/2 + RAD, RAD
-screen = pygame.display.set_mode(size)
+center = width/2, height/2
+actual_screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+screen = actual_screen.copy()
 
 # initialize information text box
 line_height = 20
@@ -43,16 +42,20 @@ num_con_civs = 0
 
 # log to record all contacts that have occurred.
 con_log = []
-# only keep this many of the latest contacts at a time
+# only keep in record this many contacts at a time
 entries_to_keep = 10
 
 # ticker of number of civs living or dead
 num_civs = init_civ_count
 
 # begin game loop
-while 1:
+running = True
+while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.VIDEORESIZE:
+            actual_screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
 
     # refresh background
     screen.fill(black)
@@ -120,7 +123,7 @@ while 1:
         percent_cons = 0
 
     # assemble each line of model data
-    data = ["Model Data:",
+    data = ["===[ Model Data ]===",
             "Case: " + str(SIM_CASE),
             "Avg civ count (DrakeEq): " + str(avg_civ_count),
             "Avg civ birthrate: " + str(avg_num_births),
@@ -133,7 +136,7 @@ while 1:
             "Contacted civs: " + str(num_con_civs),
             "Contact rate: %" + str(percent_cons),
             "",
-            "Latest cons:",
+            "===[ Latest Cons: ]===",
             ]
 
     # add most recent cons to model data
@@ -155,4 +158,12 @@ while 1:
     clock += 1
 
     # update screen
+    # transform the drawing surface to the window size
+    transformed_screen = pygame.transform.scale(screen, actual_screen.get_rect().size)
+    # blit the drawing surface to the application window
+    actual_screen.blit(transformed_screen, (0, 0))
     pygame.display.update()
+
+# if the main game loop has ended,
+# close the model
+sys.exit()
