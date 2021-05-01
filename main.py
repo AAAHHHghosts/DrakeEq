@@ -7,6 +7,8 @@ import numpy as np
 from constants import *
 from civ import Civ
 from signal import Signal
+from kivy.uix.slider import Slider
+from slider import Slider
 
 # initialize simulation window
 pygame.init()
@@ -19,6 +21,10 @@ screen = actual_screen.copy()
 # initialize information text box
 line_height = 20
 textbox = pygame.font.SysFont("Consolas", line_height)
+
+
+S = Slider("the pee pee tester", 100, 200, 0, center)
+slides = [S]
 
 # declare a set for all civilizations
 # and a set for all of their signals
@@ -56,6 +62,19 @@ while running:
             running = False
         elif event.type == pygame.VIDEORESIZE:
             actual_screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            for s in slides:
+                if s.button_rect.collidepoint(pos):
+                    s.hit = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            for s in slides:
+                s.hit = False
+
+    # move slides
+    for s in slides:
+        if s.hit:
+            s.move()
 
     # refresh background
     screen.fill(black)
@@ -152,6 +171,13 @@ while running:
     for line in data:
         screen.blit(textbox.render(line, False, white, black), (10, textbox_height))
         textbox_height += line_height
+
+    # slider to adjust drake parameters
+
+
+
+    S.draw(screen)
+
 
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))
