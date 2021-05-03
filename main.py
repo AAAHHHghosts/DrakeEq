@@ -7,7 +7,6 @@ import numpy as np
 from constants import *
 from civ import Civ
 from signal import Signal
-from kivy.uix.slider import Slider
 from slider import Slider
 
 # initialize simulation window
@@ -18,13 +17,33 @@ center = width/2, height/2
 actual_screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 screen = actual_screen.copy()
 
+# slider positions
+slide1pos = width/1.2, height/8
+slide2pos = width/1.2, height/5.5
+slide3pos = width/1.2, height/4.2
+slide4pos = width/1.2, height/3.4
+slide5pos = width/1.2, height/2.875
+slide6pos = width/1.2, height/2.5
+slide7pos = width/1.2, height/2.2
+
+R = Slider("R*", 100, 200, 0, slide1pos)
+
+fp = Slider("fp", 100, 200, 0, slide2pos)
+
+ne = Slider("ne", 100, 200, 0, slide3pos)
+
+fl = Slider("fl", 100, 200, 0, slide4pos)
+
+fi = Slider("fi", 100, 200, 0, slide5pos)
+
+fc = Slider("fc", 100, 200, 0, slide6pos)
+
+L = Slider("L", 100, 200, 0, slide7pos)
+slides = [R, fp, ne, fl, fi, fc, L]
+
 # initialize information text box
 line_height = 20
 textbox = pygame.font.SysFont("Consolas", line_height)
-
-
-S = Slider("the pee pee tester", 100, 200, 0, center)
-slides = [S]
 
 # declare a set for all civilizations
 # and a set for all of their signals
@@ -172,12 +191,9 @@ while running:
         screen.blit(textbox.render(line, False, white, black), (10, textbox_height))
         textbox_height += line_height
 
-    # slider to adjust drake parameters
-
-
-
-    S.draw(screen)
-
+    # sliders to adjust drake parameters
+    for s in slides:
+        s.draw(screen)
 
     # wait a century and advance clock by 1
     time.sleep(century_length - ((time.time() - starttime) % century_length))

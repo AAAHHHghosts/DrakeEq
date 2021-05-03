@@ -10,7 +10,7 @@ white = 255, 255, 255
 grey = 155, 155, 155
 
 # time & clock constants
-SIM_SPEED = 999999999.0
+SIM_SPEED = 100.0
 
 # toggle high and low estimates.
 # 1 for optimistic case, and 0
