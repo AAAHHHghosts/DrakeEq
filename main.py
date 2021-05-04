@@ -56,7 +56,7 @@ with open('output_data.txt', 'a') as file:
     file.truncate(0)
     file.write('Simulation start time: ' + str(starttime) + '\n' +
                'Century      |   contacts that century   |   overall contact rate  |\n' +
-               '-------------|---------------------------|-------------------------|')
+               '-------------|---------------------------|-------------------------|\n')
 
 # begin game loop
 running = True
