@@ -55,8 +55,8 @@ num_civs = init_civ_count
 with open('output_data.txt', 'a') as file:
     file.truncate(0)
     file.write('Simulation start time: ' + str(starttime) + '\n' +
-               'Century      |   contacts that century   |   overall contact rate  |\n' +
-               '-------------|---------------------------|-------------------------|\n')
+               'century      |   contacts since last time step   |   overall contact rate  |\n' +
+               '-------------|-----------------------------------|-------------------------|\n')
 
 # begin game loop
 running = True
@@ -201,7 +201,7 @@ while running:
         num_cons_every_dt = num_cons
 
         with open('output_data.txt', 'a') as file:
-            file.write("{:<12}".format(str(clock)) + ' | ' + "{:<25}".format(str(new_cons)) +
+            file.write("{:<12}".format(str(clock)) + ' | ' + "{:<33}".format(str(new_cons)) +
                        ' | %' + "{:<15}".format('{0:.8g}'.format(percent_cons)) + '\n')
 
     # update screen
