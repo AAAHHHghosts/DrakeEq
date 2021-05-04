@@ -10,7 +10,7 @@ from constants import *
 class Civ:
 
     # create and initialize member variables
-    def __init__(self, id):
+    def __init__(self, id, current_avg_lifespan):
 
         # generate random coords until coords are
         # within galaxy circle and outside galactic
@@ -27,7 +27,7 @@ class Civ:
         # define remaining civ attributes
         self.rad = 2
         self.color = (0, 0, 255)
-        self.lifespan = np.random.normal(avg_lifespan)
+        self.lifespan = np.random.normal(current_avg_lifespan)
         self.age = 0
         self.ID = int(id)
         self.cons = []

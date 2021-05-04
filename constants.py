@@ -1,16 +1,22 @@
 # milky way constants
 RAD = 500
 DIAM = 2 * RAD
-CENTER_RAD = 13
+CENTER_RAD = 1
 
 # visuals & display constants
 BUFFER = 500
 black = 0, 0, 0
 white = 255, 255, 255
 grey = 155, 155, 155
+green = 0, 255, 80
 
 # time & clock constants
 SIM_SPEED = 100.0
+SLEEP = True
+
+# GRAPHICS OPTIONS
+DRAW_SIGS = True
+DRAW_CIVS = True
 
 # toggle high and low estimates.
 # 1 for optimistic case, and 0
@@ -61,11 +67,15 @@ fc_high = 0.25
 L_low = 4
 L_high = 10
 
+# place drake values for each estimate in list
+drake_val_lows = [R_low, fp_low, ne_low, fl_low, fi_low, fc_low, L_low]
+drake_val_highs = [R_high, fp_high, ne_high, fl_high, fi_high, fc_high, L_high]
+
 # low and high estimate for N, the number of
 # currently active, communicative civilizations
 # in our galaxy
-N_low = drake_eq(R_low, fp_low, ne_low, fl_low, fi_low, fc_low, L_low)
-N_high = drake_eq(R_high, fp_high, ne_high, fl_high, fi_high, fc_high, L_high)
+N_low = drake_eq(*drake_val_lows)
+N_high = drake_eq(*drake_val_highs)
 
 # Calculate death rate for civs.
 # Because we are assuming a steady
@@ -79,7 +89,9 @@ if SIM_CASE == 1:
     avg_civ_count = N_high
     avg_num_births = civ_br_high
     avg_lifespan = L_high
+    drake_vals = drake_val_highs
 else:
     avg_civ_count = N_low
     avg_num_births = civ_br_low
     avg_lifespan = L_low
+    drake_vals = drake_val_lows

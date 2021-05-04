@@ -7,48 +7,26 @@ import numpy as np
 from constants import *
 from civ import Civ
 from signal import Signal
-from slider import Slider
+from slider import Slider, build_sliders
 
 # initialize simulation window
 pygame.init()
 pygame.display.set_caption("Galaxy Sim")
 size = width, height = BUFFER + DIAM, DIAM
 center = width/2, height/2
-actual_screen = pygame.display.set_mode(size, pygame.RESIZABLE)
-screen = actual_screen.copy()
-
-# slider positions
-slide1pos = width/1.2, height/8
-slide2pos = width/1.2, height/5.5
-slide3pos = width/1.2, height/4.2
-slide4pos = width/1.2, height/3.4
-slide5pos = width/1.2, height/2.875
-slide6pos = width/1.2, height/2.5
-slide7pos = width/1.2, height/2.2
-
-R = Slider("R*", 100, 200, 0, slide1pos)
-
-fp = Slider("fp", 100, 200, 0, slide2pos)
-
-ne = Slider("ne", 100, 200, 0, slide3pos)
-
-fl = Slider("fl", 100, 200, 0, slide4pos)
-
-fi = Slider("fi", 100, 200, 0, slide5pos)
-
-fc = Slider("fc", 100, 200, 0, slide6pos)
-
-L = Slider("L", 100, 200, 0, slide7pos)
-slides = [R, fp, ne, fl, fi, fc, L]
+screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 
 # initialize information text box
 line_height = 20
 textbox = pygame.font.SysFont("Consolas", line_height)
 
+# build drake equation sliders
+slides = build_sliders(drake_vals, width, height)
+
 # declare a set for all civilizations
 # and a set for all of their signals
 init_civ_count = np.random.poisson(avg_civ_count)
-civilizations = [Civ(i) for i in range(init_civ_count)]
+civilizations = [Civ(i, avg_lifespan) for i in range(init_civ_count)]
 signals = [Signal(civ) for civ in civilizations]
 
 # set up game clock and simulation speed
@@ -60,6 +38,7 @@ clock = 0
 
 # ticker of how many communications have occurred
 num_cons = 0
+num_cons_every_dt = 0
 
 # ticker of how many civilizations have had at
 # least one contact
@@ -73,14 +52,18 @@ entries_to_keep = 10
 # ticker of number of civs living or dead
 num_civs = init_civ_count
 
+with open('output_data.txt', 'a') as file:
+    file.truncate(0)
+    file.write('Simulation start time: ' + str(starttime) + '\n' +
+               'Century      |   contacts that century   |   overall contact rate  |\n' +
+               '-------------|---------------------------|-------------------------|')
+
 # begin game loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.VIDEORESIZE:
-            actual_screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             for s in slides:
@@ -104,16 +87,24 @@ while running:
     pygame.draw.circle(screen, black, center, CENTER_RAD)
     pygame.draw.circle(screen, grey, center, CENTER_RAD + 3, 3)
 
+    # update the drake equation values using slider values
+    drake_vals = [s.val for s in slides]
+    avg_civ_count = drake_eq(*drake_vals)
+    avg_lifespan = drake_vals[6]
+    avg_num_births = avg_civ_count / avg_lifespan
+
     # get the number of births this century
     num_births = np.random.poisson(avg_num_births)
+
     for i in range(num_births):
         num_civs += 1
-        newCiv = Civ(num_civs)
+        newCiv = Civ(num_civs, avg_lifespan)
         civilizations.append(newCiv)
 
         if newCiv.isAlive():
             newSig = Signal(newCiv)
-            signals.append(newSig)
+            if newSig.lifespan > 1:
+                signals.append(newSig)
 
     # for all sigs, redraw if sig has not fully
     # left the galaxy
@@ -121,7 +112,8 @@ while running:
         sig.advanceAge()
 
         if sig.inGalaxy():
-            sig.draw(screen)
+            if DRAW_SIGS:
+                sig.draw(screen)
         else:
             signals.remove(sig)
 
@@ -131,7 +123,8 @@ while running:
         civ.advanceAge()
 
         if civ.isAlive():
-            civ.draw(screen)
+            if DRAW_CIVS:
+                civ.draw(screen)
         else:
             civilizations.remove(civ)
 
@@ -163,16 +156,16 @@ while running:
     # assemble each line of model data
     data = ["===[ Model Data ]===",
             "Case: " + str(SIM_CASE),
-            "Avg civ count (DrakeEq): " + str(avg_civ_count),
-            "Avg civ birthrate: " + str(avg_num_births),
-            "Avg lifespan: " + str(avg_lifespan),
             "Century #" + str(clock),
+            "Avg civ count (DrakeEq): " + str('{0:.4g}'.format(avg_civ_count)),
+            "Avg civ birthrate: " + str('{0:.4g}'.format(avg_num_births)),
+            "Avg lifespan: " + str('{0:.4g}'.format(avg_lifespan)),
             "There are " + str(len(civilizations)) + " civs",
+            "Total civs living or dead: " + str(num_civs),
             "Signals in gal: " + str(len(signals)),
             "Total contacts: " + str(num_cons),
-            "Total civs living or dead: " + str(num_civs),
             "Contacted civs: " + str(num_con_civs),
-            "Contact rate: %" + str(percent_cons),
+            "Contact rate: %" + str('{0:.8g}'.format(percent_cons)),
             "",
             "===[ Latest Cons: ]===",
             ]
@@ -193,17 +186,25 @@ while running:
 
     # sliders to adjust drake parameters
     for s in slides:
-        s.draw(screen)
+        s.draw(screen, s.val)
 
     # wait a century and advance clock by 1
-    time.sleep(century_length - ((time.time() - starttime) % century_length))
+
+    if SLEEP:
+        time.sleep(((time.time() - starttime) % century_length))
+
     clock += 1
 
+    if clock % 1000 == 0:
+
+        new_cons = num_cons - num_cons_every_dt
+        num_cons_every_dt = num_cons
+
+        with open('output_data.txt', 'a') as file:
+            file.write("{:<12}".format(str(clock)) + ' | ' + "{:<25}".format(str(new_cons)) +
+                       ' | %' + "{:<15}".format('{0:.8g}'.format(percent_cons)) + '\n')
+
     # update screen
-    # transform the drawing surface to the window size
-    transformed_screen = pygame.transform.scale(screen, actual_screen.get_rect().size)
-    # blit the drawing surface to the application window
-    actual_screen.blit(transformed_screen, (0, 0))
     pygame.display.update()
 
 # if the main game loop has ended,

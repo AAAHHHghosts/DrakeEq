@@ -1,6 +1,6 @@
 # import dependencies
 
-from constants import DIAM
+from constants import DIAM, green
 import pygame
 
 # create signal object
@@ -11,7 +11,7 @@ class Signal:
         self.x, self.y = civ.x, civ.y
         self.rad = 0
         self.width = 0
-        self.color = (0, 255, 80)
+        self.color = green
         self.lifespan = civ.lifespan
         self.age = 0
         self.ID = civ.ID
@@ -28,8 +28,7 @@ class Signal:
     def advanceAge(self):
         self.age += 1
         self.rad += 1
-
-        if (self.isEmitting()):
+        if self.isEmitting():
             self.width = self.width + 1
 
     # draw the civilization
